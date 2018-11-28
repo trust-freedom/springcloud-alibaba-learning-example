@@ -1,6 +1,5 @@
 package com.freedom.springcloud.alibaba.controller;
 
-import com.alibaba.csp.sentinel.Tracer;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import org.slf4j.Logger;
@@ -10,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class FlowRuleTestController {
-    private static final Logger logger = LoggerFactory.getLogger(FlowRuleTestController.class);
+public class FlowRuleThreadTestController {
+    private static final Logger logger = LoggerFactory.getLogger(FlowRuleThreadTestController.class);
 
 
     /**
@@ -37,15 +36,15 @@ public class FlowRuleTestController {
 
 
     /**
-     * 流量控制规则测试方法
+     * 基于并发线程数的流量控制规则测试
      * @param delayInSecond
      * @return
      */
-    @SentinelResource( value="flowRuleTest", blockHandler="flowRuleTestBlockHandler", fallback="flowRuleTestFallback" )
-    @RequestMapping("/flowRuleTest/{delayInSecond}")
-    public String flowRuleTest(@PathVariable int delayInSecond) throws Exception {
+    @SentinelResource( value="flowRuleThreadTest", blockHandler="flowRuleThreadTestBlockHandler", fallback="flowRuleThreadTestFallback" )
+    @RequestMapping("/flowRuleThreadTest/{delayInSecond}")
+    public String flowRuleThreadTest(@PathVariable int delayInSecond) throws Exception {
         long start = System.currentTimeMillis();
-        logger.info("=========flowRuleTest call, delayInSecond=" + delayInSecond);
+        logger.info("=========flowRuleThreadTest call, delayInSecond=" + delayInSecond);
 
         try {
             Thread.sleep(delayInSecond * 1000);
@@ -55,21 +54,21 @@ public class FlowRuleTestController {
 
         long during = System.currentTimeMillis() - start;
 
-        return "Hello, this is flowRuleTest. Execution time " + during + "ms.";
+        return "Hello, this is flowRuleThreadTest. Execution time " + during + "ms.";
     }
 
     // 限流处理器（BlockException）
-    public String flowRuleTestBlockHandler(int delayInSecond, BlockException ex) throws Exception {
-        logger.error("flowRuleTest 请求被限流", ex);
+    public String flowRuleThreadTestBlockHandler(int delayInSecond, BlockException ex) throws Exception {
+        logger.error("flowRuleThreadTest 请求被限流", ex);
 
-        return "flowRuleTest 请求被限流";
+        return "flowRuleThreadTest 请求被限流";
     }
 
     // 熔断降级（DegradeException）
-    public String flowRuleTestFallback(int delayInSecond) throws Exception {
-        logger.info("flowRuleTest 请求被降级");
+    public String flowRuleThreadTestFallback(int delayInSecond) throws Exception {
+        logger.info("flowRuleThreadTest 请求被降级");
 
-        return "flowRuleTest 请求被降级";
+        return "flowRuleThreadTest 请求被降级";
     }
 
 

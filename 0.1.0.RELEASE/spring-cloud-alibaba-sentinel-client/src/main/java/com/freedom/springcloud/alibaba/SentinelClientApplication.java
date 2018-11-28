@@ -20,6 +20,7 @@ public class SentinelClientApplication {
 		/**
 		 * 初始化流量控制规则
 		 *   - 并发线程数量
+		 *   - QPS
 		 */
 		initFlowRules();
 
@@ -37,6 +38,7 @@ public class SentinelClientApplication {
 
 	/**
 	 * 初始化流量控制规则
+	 * FlowRule没有恢复时间窗口的概念
 	 */
 	private static void initFlowRules(){
 		List<FlowRule> rules = new ArrayList<FlowRule>();
@@ -44,12 +46,22 @@ public class SentinelClientApplication {
 		/**
 		 * 并发线程数量
 		 */
-		FlowRule rule = new FlowRule();
-		rule.setResource("flowRuleTest");
-		rule.setCount(2); //流控阈值设置为2
-		rule.setGrade(RuleConstant.FLOW_GRADE_THREAD); //并发线程数量控制
-		rule.setLimitApp("default");
-		rules.add(rule);
+		FlowRule rule1 = new FlowRule();
+		rule1.setResource("flowRuleThreadTest");
+		rule1.setCount(2); //流控阈值设置为2
+		rule1.setGrade(RuleConstant.FLOW_GRADE_THREAD); //并发线程数量控制
+		rule1.setLimitApp("default");
+		rules.add(rule1);
+
+		/**
+		 * 并发线程数量
+		 */
+		FlowRule rule2 = new FlowRule();
+		rule2.setResource("flowRuleQPSTest");
+		rule2.setCount(2); //QPS阈值2
+		rule2.setGrade(RuleConstant.FLOW_GRADE_QPS); //QPS流控
+		rule2.setLimitApp("default");
+		rules.add(rule2);
 
 		FlowRuleManager.loadRules(rules);
 	}
